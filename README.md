@@ -198,3 +198,16 @@ python train_model.py
 
 **License**: MIT  
 **Year**: 2024
+
+# Example Output
+Training samples: 1437
+Testing samples: 360
+
+Starting Firefly Optimization...
+
+Iteration 10/150, Best Fitness: 0.103375
+Iteration 20/150, Best Fitness: 0.103375
+...
+
+Training Accuracy: ~11%
+Testing Accuracy: ~12%
