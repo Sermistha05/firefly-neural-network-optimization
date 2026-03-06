@@ -12,8 +12,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import confusion_matrix
 
-from neural_network import NeuralNetwork
-from firefly_algorithm import FireflyAlgorithm
+from src.neural_network import NeuralNetwork
+from src.firefly_algorithm import FireflyAlgorithm
 
 
 def one_hot_encode(y, num_classes):

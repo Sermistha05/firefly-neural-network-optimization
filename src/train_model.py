@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 from sklearn.datasets import load_digits
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-from neural_network import NeuralNetwork
+from src.neural_network import NeuralNetwork
 from firefly_algorithm import FireflyAlgorithm
 
 # Load and preprocess dataset

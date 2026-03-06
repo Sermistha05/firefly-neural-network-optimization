@@ -2,80 +2,147 @@
 
 ## Project Overview
 
-This project implements a neural network trained using the **Firefly Algorithm** for handwritten digit classification. Instead of traditional gradient-based optimization methods like backpropagation, this project uses a nature-inspired metaheuristic algorithm (Firefly Algorithm) to optimize the neural network weights. The system classifies handwritten digits (0-9) from the UCI Digits dataset with a neural network architecture of 64-32-10 neurons.
+This project implements a neural network trained using the **Firefly Algorithm**, a nature-inspired metaheuristic optimization technique, for handwritten digit classification. Unlike traditional gradient-based methods such as backpropagation, this approach leverages swarm intelligence to optimize neural network weights. The model is trained and evaluated on the **UCI Digits Dataset** from scikit-learn, achieving competitive accuracy through bio-inspired optimization.
+
+## Algorithm Explanation
+
+The **Firefly Algorithm** is a nature-inspired optimization algorithm based on the flashing behavior of fireflies. In this implementation:
+
+- Each **firefly** represents a complete set of neural network weights (a candidate solution)
+- **Brightness** corresponds to the fitness of the solution (inverse of classification loss)
+- Fireflies are attracted to brighter fireflies (better solutions) and move toward them
+- The movement is governed by the equation: `xi = xi + β * exp(-γ * r²) * (xj - xi) + α * ε`
+  - `β`: attractiveness coefficient
+  - `γ`: light absorption coefficient
+  - `α`: randomization parameter
+  - `r`: distance between fireflies
+  - `ε`: random noise
+
+Through iterative movement and evaluation, the algorithm converges to optimal or near-optimal neural network weights without requiring gradient computation.
 
 ## Dataset
 
-The project uses the **UCI Digits Dataset** from scikit-learn, which contains:
-- 1,797 samples of 8x8 pixel grayscale images of handwritten digits
-- 10 classes (digits 0-9)
-- 64 features per sample (flattened 8x8 pixel values)
+The **UCI Digits Dataset** from scikit-learn is used for training and evaluation:
 
-The dataset is split into 80% training and 20% testing sets, with feature normalization applied using StandardScaler.
+- **Samples**: 1,797 grayscale images of handwritten digits (0-9)
+- **Image Size**: 8×8 pixels (64 features per sample)
+- **Classes**: 10 (digits 0 through 9)
+- **Split**: 80% training, 20% testing
+- **Preprocessing**: Feature normalization using StandardScaler
 
 ## Project Structure
 
 ```
 Firefly_NN_Project/
 │
-├── neural_network.py          # Neural network class with forward pass, loss computation, and prediction
-├── firefly_algorithm.py       # Firefly Algorithm implementation for weight optimization
-├── train.py                   # Main training script with full pipeline and visualizations
-├── load_digits.py             # Script to load and preprocess the UCI Digits dataset
-├── train_model.py             # Alternative training script with basic functionality
-├── results.txt                # Saved experiment results (accuracy, parameters)
-├── convergence_curve.png      # Visualization of optimization convergence
-└── digit_predictions.png      # Sample digit predictions visualization
+├── neural_network.py          # Neural network implementation (64-32-10 architecture)
+├── firefly_algorithm.py       # Firefly Algorithm optimization engine
+├── train.py                   # Main training pipeline with full visualizations
+├── load_digits.py             # Dataset loading and preprocessing utilities
+├── train_model.py             # Simplified training script for quick experiments
+├── requirements.txt           # Python dependencies
+├── results.txt                # Experiment results log (auto-generated)
+├── convergence_curve.png      # Optimization convergence plot (auto-generated)
+└── digit_predictions.png      # Sample predictions visualization (auto-generated)
 ```
 
 ### File Descriptions
 
-- **neural_network.py**: Defines the NeuralNetwork class with ReLU activation for the hidden layer and Softmax for the output layer. Includes forward propagation, cross-entropy loss computation, and prediction methods.
+- **neural_network.py**: Implements a 3-layer feedforward neural network with ReLU activation (hidden layer) and Softmax activation (output layer). Includes forward propagation, cross-entropy loss computation, and prediction methods.
 
-- **firefly_algorithm.py**: Implements the Firefly Algorithm for optimizing neural network weights. Each firefly represents a complete set of network weights, and the algorithm iteratively improves solutions based on brightness (fitness).
+- **firefly_algorithm.py**: Core implementation of the Firefly Algorithm. Manages population initialization, fitness evaluation, firefly movement dynamics, and convergence tracking.
 
-- **train.py**: Complete training pipeline that loads data, initializes the neural network, runs Firefly optimization, evaluates performance, and generates visualizations (confusion matrix, convergence curve, sample predictions).
+- **train.py**: Complete training pipeline that orchestrates data loading, neural network initialization, Firefly optimization, performance evaluation, and result visualization (confusion matrix, convergence curve, sample predictions).
 
-- **load_digits.py**: Standalone script for loading and exploring the UCI Digits dataset with basic statistics.
+- **load_digits.py**: Utility script for loading the UCI Digits dataset, applying normalization, and splitting into training/testing sets.
 
-- **train_model.py**: Simplified training script with core functionality for quick experiments.
+- **train_model.py**: Lightweight training script with essential functionality for rapid prototyping and experimentation.
 
-- **results.txt**: Stores experiment results including population size, iterations, training accuracy, and testing accuracy for multiple runs.
+- **requirements.txt**: Lists all Python package dependencies with version constraints for reproducible environment setup.
 
-- **convergence_curve.png**: Graph showing the best fitness value over iterations during optimization.
+## Workflow / System Architecture
 
-- **digit_predictions.png**: 2x5 grid displaying sample test images with their predicted labels.
+The system follows a structured pipeline:
 
-## How the System Works
+```
+┌─────────────────┐
+│  UCI Digits     │
+│  Dataset        │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Data            │
+│ Preprocessing   │  (Normalization, Train-Test Split)
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Neural Network  │
+│ Initialization  │  (64 → 32 → 10 architecture)
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Firefly         │
+│ Optimization    │  (Weight optimization via swarm intelligence)
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Model           │
+│ Evaluation      │  (Accuracy, Confusion Matrix)
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Visualization   │
+│ & Results       │  (Convergence, Predictions, Metrics)
+└─────────────────┘
+```
 
-The workflow follows these steps:
+**Pipeline Steps:**
 
-1. **Dataset Loading**: Load UCI Digits dataset and normalize features using StandardScaler
-2. **Data Splitting**: Split into 80% training and 20% testing sets
-3. **Neural Network Initialization**: Create a 3-layer network (64 → 32 → 10 neurons)
-4. **Firefly Optimization**: 
-   - Initialize population of fireflies (each representing network weights)
-   - Evaluate fitness using cross-entropy loss
-   - Move fireflies toward brighter ones (better solutions)
-   - Iterate until convergence or max iterations reached
-5. **Evaluation**: Calculate training and testing accuracy, generate confusion matrix
-6. **Visualization**: Plot convergence curve and sample predictions
+1. **Dataset Loading**: Load UCI Digits dataset from scikit-learn
+2. **Data Preprocessing**: Normalize features using StandardScaler and split into 80-20 train-test sets
+3. **Neural Network Initialization**: Create a 3-layer network with 64 input neurons, 32 hidden neurons, and 10 output neurons
+4. **Firefly Optimization**: Initialize population of 40 fireflies, each representing a weight configuration. Iterate for 120 generations, evaluating fitness and moving fireflies toward better solutions
+5. **Evaluation**: Compute training and testing accuracy, generate confusion matrix
+6. **Visualization**: Plot convergence curve, display sample predictions, save results to file
 
-### Firefly Algorithm Parameters
+## Results
 
-- **Population Size**: 40 fireflies
-- **Max Iterations**: 120
-- **Alpha (α)**: 0.3 (randomization parameter)
-- **Beta0 (β₀)**: 1.0 (attractiveness coefficient)
-- **Gamma (γ)**: 0.9 (light absorption coefficient)
+The trained model produces the following outputs:
+
+### Performance Metrics
+- **Training Accuracy**: 85-95% (varies with optimization convergence)
+- **Testing Accuracy**: 80-90% on unseen data
+
+### Visualizations
+- **Convergence Curve** (`convergence_curve.png`): Tracks best fitness value across 120 iterations, demonstrating optimization progress
+- **Confusion Matrix**: Heatmap showing classification performance across all 10 digit classes
+- **Sample Predictions** (`digit_predictions.png`): 2×5 grid displaying 10 test images with predicted labels
+
+### Experiment Logs
+- **results.txt**: Automatically appends experiment results including population size, iterations, training accuracy, and testing accuracy for reproducibility
 
 ## How to Run the Project
 
 ### Prerequisites
 
-Install required dependencies:
+Ensure you have Python 3.7+ installed.
+
+### Installation
+
+1. Clone the repository:
 ```bash
-pip install numpy matplotlib seaborn scikit-learn
+git clone <repository-url>
+cd Firefly_NN_Project
+```
+
+2. Install dependencies:
+```bash
+pip install -r requirements.txt
 ```
 
 ### Running the Training
@@ -86,58 +153,48 @@ python train.py
 ```
 
 This will:
-- Load and preprocess the dataset
-- Train the neural network using Firefly Algorithm
+- Load and preprocess the UCI Digits dataset
+- Initialize the neural network
+- Run Firefly Algorithm optimization (40 fireflies, 120 iterations)
 - Display training and testing accuracy
 - Generate and save visualizations
-- Append results to results.txt
+- Append results to `results.txt`
 
-### Alternative Training Script
+### Alternative: Quick Training
 
-For a simpler version without all visualizations:
+For a simplified version without extensive visualizations:
 ```bash
 python train_model.py
 ```
-
-## Results
-
-The system produces the following outputs:
-
-- **Training Accuracy**: Typically 85-95% depending on optimization convergence
-- **Testing Accuracy**: Typically 80-90% on unseen data
-- **Convergence Graph**: Shows fitness improvement over 120 iterations
-- **Confusion Matrix**: Displays classification performance across all 10 digit classes
-- **Sample Predictions**: Visual verification of model predictions on 10 test images
-
-Results are automatically saved to `results.txt` for tracking experiments with different parameters.
 
 ## Technologies Used
 
 - **Python 3.x**: Core programming language
 - **NumPy**: Numerical computations and array operations
 - **Matplotlib**: Data visualization and plotting
-- **Seaborn**: Enhanced visualization for confusion matrix
+- **Seaborn**: Statistical data visualization (confusion matrix heatmaps)
 - **scikit-learn**: Dataset loading, preprocessing, and evaluation metrics
 
 ## Key Features
 
-- ✅ Nature-inspired optimization (no backpropagation required)
-- ✅ Modular and extensible code structure
-- ✅ Comprehensive visualizations (convergence, confusion matrix, predictions)
-- ✅ Experiment tracking with results logging
-- ✅ Support for both integer and one-hot encoded labels
-- ✅ Numerical stability with probability clipping
+✅ **Gradient-Free Optimization**: No backpropagation required  
+✅ **Nature-Inspired Algorithm**: Leverages swarm intelligence  
+✅ **Modular Architecture**: Clean, extensible codebase  
+✅ **Comprehensive Visualizations**: Convergence tracking, confusion matrix, sample predictions  
+✅ **Experiment Tracking**: Automatic logging of results  
+✅ **Flexible Label Encoding**: Supports both integer and one-hot encoded labels  
+✅ **Numerical Stability**: Probability clipping to prevent log(0) errors  
 
-## Future Improvements
+## Future Enhancements
 
 - Implement adaptive parameter tuning for Firefly Algorithm
-- Add support for different neural network architectures
-- Compare performance with gradient-based methods
-- Extend to other datasets (MNIST, Fashion-MNIST)
-- Add early stopping based on validation performance
+- Add support for deeper neural network architectures
+- Benchmark against gradient-based optimization methods (SGD, Adam)
+- Extend to larger datasets (MNIST, Fashion-MNIST, CIFAR-10)
+- Implement early stopping based on validation performance
+- Add hyperparameter grid search functionality
 
 ---
 
-**Author**: Machine Learning Enthusiast  
 **License**: MIT  
 **Year**: 2024
