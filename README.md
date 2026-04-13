@@ -14,27 +14,29 @@ The **Firefly Algorithm** is a nature-inspired optimization algorithm based on t
 - The movement is governed by the equation: `xi = xi + β * exp(-γ * r²) * (xj - xi) + α * ε`
   - `β`: attractiveness coefficient
   - `γ`: light absorption coefficient
-  - `α`: randomization parameter
+  - `α`: randomization parameter (controls exploration)
   - `r`: distance between fireflies
-  - `ε`: random noise
+  - `ε`: random noise 
 
 Through iterative movement and evaluation, the algorithm converges to optimal or near-optimal neural network weights without requiring gradient computation.
 
+#heuristic = enable someone or to discover or learn something for themselves
+#metaheuristic = they are problem-independent techniques that can be applied to a broad range of problems.
+
 ## Dataset
 
-The **UCI Digits Dataset** from scikit-learn is used for training and evaluation:
+The **UCI(University of California at Irvine) Digits Dataset** from scikit-learn is used for training and evaluation:
 
 - **Samples**: 1,797 grayscale images of handwritten digits (0-9)
 - **Image Size**: 8×8 pixels (64 features per sample)
 - **Classes**: 10 (digits 0 through 9)
 - **Split**: 80% training, 20% testing
-- **Preprocessing**: Feature normalization using StandardScaler
+- **Preprocessing**: Feature normalization using StandardScaler (to improve optimization performance)
 
 ## Project Structure
 
 ```
 Firefly_NN_Project/
-│
 ├── neural_network.py          # Neural network implementation (64-32-10 architecture)
 ├── firefly_algorithm.py       # Firefly Algorithm optimization engine
 ├── train.py                   # Main training pipeline with full visualizations
@@ -53,6 +55,9 @@ Firefly_NN_Project/
 - **firefly_algorithm.py**: Core implementation of the Firefly Algorithm. Manages population initialization, fitness evaluation, firefly movement dynamics, and convergence tracking.
 
 - **train.py**: Complete training pipeline that orchestrates data loading, neural network initialization, Firefly optimization, performance evaluation, and result visualization (confusion matrix, convergence curve, sample predictions).
+#confusion matrix = a table used to evaluate the performance of a classification model by comparing predicted labels with true labels. It shows true positives, true negatives, false positives, and false negatives for each class.
+#loss function = a mathematical function that quantifies the difference between predicted outputs and true labels. The goal of training is to minimize this loss, improving model performance.
+#weights = parameters of the neural network that are adjusted during training to minimize the loss function and improve model performance.
 
 - **load_digits.py**: Utility script for loading the UCI Digits dataset, applying normalization, and splitting into training/testing sets.
 
@@ -224,3 +229,8 @@ The Firefly Algorithm optimizes neural network weights using a swarm-based searc
 Due to the high dimensionality of the neural network parameter space (2410 weights), optimization may converge slowly and may not reach the same accuracy as gradient-based methods like backpropagation.
 
 Increasing population size or iterations may improve results but increases computation time.
+
+i have saved a file name Figure_1.png and have to push it to the repository 
+git add Figure_1.png
+git commit -m "Add convergence curve visualization"
+git push origin main

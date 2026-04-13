@@ -31,6 +31,7 @@ print(f"Testing samples: {X_test.shape[0]}")
 nn = NeuralNetwork()
 
 # Calculate total weights
+# formula for dimension=(input_size * hidden_layer_size + hidden_layer_size) + (hidden_layer_size * output_size + output_size)
 dimension = 64*32 + 32 + 32*10 + 10
 print(f"Total weights: {dimension}")
 

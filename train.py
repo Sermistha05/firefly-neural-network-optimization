@@ -11,9 +11,11 @@ from sklearn.datasets import load_digits # sklearn is used to load the digits da
 from sklearn.model_selection import train_test_split 
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import confusion_matrix
-
+# mainly sklearn is used for data preprocessing and evaluation metrics,
+# while matplotlib and seaborn are used for visualization.
 from src.neural_network import NeuralNetwork
 from src.firefly_algorithm import FireflyAlgorithm
+#src normally is used to import custom modules
 
 
 def one_hot_encode(y, num_classes):
@@ -58,7 +60,7 @@ fa = FireflyAlgorithm(
     alpha=0.8,
     beta0=1,
     gamma=0.3,
-    max_iterations=100,
+    max_iterations=120,
     neural_network=nn,
     X_train=X_train,
     y_train=y_train_onehot
