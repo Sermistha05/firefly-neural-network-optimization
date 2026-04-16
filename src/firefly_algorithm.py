@@ -40,12 +40,18 @@ class FireflyAlgorithm:
         # Set weights and compute fitness
         self.set_weights_to_network(weight_vector)
         
-        # Forward pass and compute loss
+        # Forward pass
         y_pred = self.neural_network.forward(self.X_train)
-        loss = self.neural_network.compute_loss(self.y_train, y_pred)
+        predictions = np.argmax(y_pred, axis=1)
         
-        # Fitness = 1 / (loss + epsilon)
-        return 1.0 / (loss + 1e-6)
+        # Handle both integer labels and one-hot labels
+        if self.y_train.ndim > 1:
+            y_true = np.argmax(self.y_train, axis=1)
+        else:
+            y_true = self.y_train
+        
+        accuracy = np.mean(predictions == y_true)
+        return accuracy
     
     def move_fireflies(self):
         # Move fireflies based on brightness (fitness)
@@ -54,16 +60,21 @@ class FireflyAlgorithm:
                 if self.fitness_values[j] > self.fitness_values[i]:
                     # Calculate distance
                     r = np.linalg.norm(self.fireflies[i] - self.fireflies[j])
-                    
+
                     # Calculate attractiveness: beta = beta0 * exp(-gamma * r^2)
-                    beta = self.beta0 * np.exp(-self.gamma * r**2)
-                    
-                    # Move firefly i towards j with random noise
-                    random_noise = np.random.uniform(-1, 1, self.dimension)
-                    self.fireflies[i] = self.fireflies[i] + \
-                                        beta * (self.fireflies[j] - self.fireflies[i]) + \
-                                        self.alpha * random_noise
-                    self.fireflies[i] = np.clip(self.fireflies[i], -5, 5)
+                    beta = self.beta0 * np.exp(-self.gamma * r * r)
+
+                    # Centered random step for balanced exploration
+                    random_step = self.alpha * (np.random.rand(self.dimension) - 0.5)
+
+                    # Move firefly i towards j with random step
+                    self.fireflies[i] += beta * (self.fireflies[j] - self.fireflies[i]) + random_step
+
+                    # Slight Gaussian noise boost to prevent premature convergence
+                    self.fireflies[i] += 0.01 * np.random.randn(self.dimension)
+
+                    # Clip weights to tighter range to maintain search stability
+                    self.fireflies[i] = np.clip(self.fireflies[i], -1, 1)
     
     def optimize(self):
         # Initialize population

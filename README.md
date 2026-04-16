@@ -3,7 +3,7 @@
 ## Project Overview
 
 This project implements a neural network trained using the **Firefly Algorithm**, a nature-inspired metaheuristic optimization technique, for handwritten digit classification. Unlike traditional gradient-based methods such as backpropagation, this approach leverages swarm intelligence to optimize neural network weights. The model is trained and evaluated on the **UCI Digits Dataset** from scikit-learn, achieving competitive accuracy through bio-inspired optimization.
-
+# neural network = a computational model inspired by the structure and function of biological neural networks, consisting of interconnected layers of nodes (neurons) that process and transmit information. It is used for tasks such as classification, regression, and pattern recognition.`
 ## Algorithm Explanation
 
 The **Firefly Algorithm** is a nature-inspired optimization algorithm based on the flashing behavior of fireflies. In this implementation:
@@ -17,6 +17,12 @@ The **Firefly Algorithm** is a nature-inspired optimization algorithm based on t
   - `α`: randomization parameter (controls exploration)
   - `r`: distance between fireflies
   - `ε`: random noise 
+
+# are these above values fixed?
+# Yes, in this implementation, the parameters `α`, `β`, and `γ` are set to fixed values (e.g., `α=0.8`, `β0=1`, `γ=0.3`) based on empirical testing. However, these parameters can be tuned for better performance or adapted dynamically during optimization.
+# why taken population size 80? can we increase it ourselves?
+- The population size of 80 fireflies was chosen based on a balance between exploration and computational efficiency. A larger population can provide better coverage of the search space but increases computation time, while a smaller population may converge faster but risks getting trapped in local minima. This value was selected after experimentation to achieve good performance on the UCI Digits dataset.
+- Yes, you can increase the population size to potentially improve optimization results, but be aware that it will also increase the computational cost. It's recommended to experiment with different population sizes (e.g., 100, 150) to find the optimal balance for your specific use case.
 
 Through iterative movement and evaluation, the algorithm converges to optimal or near-optimal neural network weights without requiring gradient computation.
 
@@ -32,7 +38,7 @@ The **UCI(University of California at Irvine) Digits Dataset** from scikit-learn
 - **Classes**: 10 (digits 0 through 9)
 - **Split**: 80% training, 20% testing
 - **Preprocessing**: Feature normalization using StandardScaler (to improve optimization performance)
-
+- how many fireflies? 100
 ## Project Structure
 
 ```
@@ -57,6 +63,7 @@ Firefly_NN_Project/
 - **train.py**: Complete training pipeline that orchestrates data loading, neural network initialization, Firefly optimization, performance evaluation, and result visualization (confusion matrix, convergence curve, sample predictions).
 #confusion matrix = a table used to evaluate the performance of a classification model by comparing predicted labels with true labels. It shows true positives, true negatives, false positives, and false negatives for each class.
 #loss function = a mathematical function that quantifies the difference between predicted outputs and true labels. The goal of training is to minimize this loss, improving model performance.
+
 #weights = parameters of the neural network that are adjusted during training to minimize the loss function and improve model performance.
 
 - **load_digits.py**: Utility script for loading the UCI Digits dataset, applying normalization, and splitting into training/testing sets.
@@ -85,7 +92,7 @@ The system follows a structured pipeline:
 ┌─────────────────┐
 │ Neural Network  │
 │ Initialization  │  (64 → 32 → 10 architecture)
-└────────┬────────┘
+└────────┬────────┘  
          │
          ▼
 ┌─────────────────┐
