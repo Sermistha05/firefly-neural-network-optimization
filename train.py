@@ -55,7 +55,7 @@ print(f"Total weights to optimize: {n_weights}")
 
 # Initialize Firefly Algorithm
 fa = FireflyAlgorithm(
-    population_size=80,
+    population_size=200,
     dimension=n_weights,
     alpha=0.8,
     beta0=1,
