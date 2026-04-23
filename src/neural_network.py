@@ -1,41 +1,77 @@
 import numpy as np
 
+
 class NeuralNetwork:
-    def __init__(self):
-        # Initialize weights with small random values
-        self.W1 = np.random.randn(64, 32) * 0.01 # 64 input features, 32 hidden neurons
-        self.b1 = np.zeros((1, 32)) # 1, 32 are the dimensions of the bias for the hidden layer
-        self.W2 = np.random.randn(32, 10) * 0.01 # 32 hidden neurons, 10 output classes 
-        self.b2 = np.zeros((1, 10)) # 1, 10 are the dimensions of the bias for the output layer
-    
+    """
+    64 -> 64 (ReLU) -> 32 (ReLU) -> 10 (Softmax)
+    Total weights: 64*64+64 + 64*32+32 + 32*10+10 = 6,570
+    He initialization + L2 regularization.
+    """
+
+    INPUT   = 64
+    HIDDEN1 = 64
+    HIDDEN2 = 32
+    OUTPUT  = 10
+
+    def __init__(self, l2: float = 1e-4):
+        self.l2 = l2
+        self.W1 = np.random.randn(self.INPUT,   self.HIDDEN1) * np.sqrt(2.0 / self.INPUT)
+        self.b1 = np.zeros((1, self.HIDDEN1))
+        self.W2 = np.random.randn(self.HIDDEN1, self.HIDDEN2) * np.sqrt(2.0 / self.HIDDEN1)
+        self.b2 = np.zeros((1, self.HIDDEN2))
+        self.W3 = np.random.randn(self.HIDDEN2, self.OUTPUT)  * np.sqrt(2.0 / self.HIDDEN2)
+        self.b3 = np.zeros((1, self.OUTPUT))
+
     def forward(self, X):
-        # Hidden layer with ReLU activation
-        self.z1 = np.dot(X, self.W1) + self.b1
-        self.a1 = np.maximum(0, self.z1)
-        
-        # Output layer with Softmax activation
-        self.z2 = np.dot(self.a1, self.W2) + self.b2
-        exp_scores = np.exp(self.z2 - np.max(self.z2, axis=1, keepdims=True))
-        self.a2 = exp_scores / np.sum(exp_scores, axis=1, keepdims=True)
-        
-        return self.a2
-    
+        self.z1 = X @ self.W1 + self.b1
+        self.a1 = np.maximum(0.0, self.z1)
+        self.z2 = self.a1 @ self.W2 + self.b2
+        self.a2 = np.maximum(0.0, self.z2)
+        self.z3 = self.a2 @ self.W3 + self.b3
+        e       = np.exp(self.z3 - self.z3.max(axis=1, keepdims=True))
+        self.a3 = e / e.sum(axis=1, keepdims=True)
+        return self.a3
+
     def compute_loss(self, y_true, y_pred):
-        # Cross-entropy loss with clipping to avoid log(0)
-        epsilon = 1e-10
-        y_pred_clipped = np.clip(y_pred, epsilon, 1 - epsilon)
-        
-        # Handle both integer labels and one-hot encoded labels
-        if y_true.ndim == 1:  # Integer labels
-            m = y_true.shape[0]
-            log_likelihood = -np.log(y_pred_clipped[range(m), y_true])
-        else:  # One-hot encoded labels
-            log_likelihood = -np.sum(y_true * np.log(y_pred_clipped), axis=1)
-        
-        loss = np.mean(log_likelihood)
-        return loss
-    
+        eps = 1e-10
+        p   = np.clip(y_pred, eps, 1 - eps)
+        if y_true.ndim == 1:
+            ce = -np.log(p[range(len(y_true)), y_true]).mean()
+        else:
+            ce = -(y_true * np.log(p)).sum(axis=1).mean()
+        l2 = self.l2 * (np.sum(self.W1**2) + np.sum(self.W2**2) + np.sum(self.W3**2))
+        return ce + l2
+
     def predict(self, X):
-        # Return predicted class labels
-        y_pred = self.forward(X)
-        return np.argmax(y_pred, axis=1)
+        return np.argmax(self.forward(X), axis=1)
+
+    def get_weights(self) -> np.ndarray:
+        return np.concatenate([
+            self.W1.ravel(), self.b1.ravel(),
+            self.W2.ravel(), self.b2.ravel(),
+            self.W3.ravel(), self.b3.ravel(),
+        ])
+
+    def set_weights(self, w: np.ndarray):
+        i = 0
+        def _take(rows, cols):
+            nonlocal i
+            n   = rows * cols
+            out = w[i:i+n].reshape(rows, cols); i += n
+            return out
+        def _take_bias(n):
+            nonlocal i
+            out = w[i:i+n].reshape(1, n); i += n
+            return out
+        self.W1 = _take(self.INPUT,   self.HIDDEN1)
+        self.b1 = _take_bias(self.HIDDEN1)
+        self.W2 = _take(self.HIDDEN1, self.HIDDEN2)
+        self.b2 = _take_bias(self.HIDDEN2)
+        self.W3 = _take(self.HIDDEN2, self.OUTPUT)
+        self.b3 = _take_bias(self.OUTPUT)
+
+    @property
+    def n_weights(self):
+        return (self.INPUT * self.HIDDEN1 + self.HIDDEN1 +
+                self.HIDDEN1 * self.HIDDEN2 + self.HIDDEN2 +
+                self.HIDDEN2 * self.OUTPUT + self.OUTPUT)
